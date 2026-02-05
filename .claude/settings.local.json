@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "Bash(curl:*)",
+      "Bash(pip install:*)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill:*)",
+      "Bash(python3:*)",
+      "Bash(cat:*)",
+      "Bash(tail:*)",
+      "Bash(xcodebuild:*)",
+      "WebSearch",
+      "Bash(echo:*)",
+      "Bash(pip3 install:*)",
+      "Bash(pip3:*)",
+      "Bash(pip3 index versions:*)",
+      "Bash(swiftc:*)"
+    ]
+  }
+}

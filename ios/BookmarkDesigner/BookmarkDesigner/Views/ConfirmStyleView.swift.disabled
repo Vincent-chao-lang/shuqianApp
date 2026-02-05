@@ -1,0 +1,283 @@
+//
+//  ConfirmStyleView.swift
+//  BookmarkDesigner
+//
+//  步骤2: 确认风格参数
+//
+
+import SwiftUI
+
+struct ConfirmStyleView: View {
+    @Binding var path: NavigationPath
+    @EnvironmentObject var designState: DesignState
+    @State private var showingMoodPicker = false
+    @State private var showingAdvancedSettings = false
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 30) {
+                // 进度指示器
+                ProgressBar(currentStep: 2, totalSteps: 4)
+
+                VStack(spacing: 24) {
+                    // 标题
+                    VStack(spacing: 8) {
+                        Text("我理解你想要这样的感觉")
+                            .font(.system(size: 24, weight: .bold))
+
+                        if let analysis = designState.analysisResult {
+                            Text("基于AI分析：\(analysis.description)")
+                                .font(.system(size: 14))
+                                .foregroundStyle(.secondary)
+                                .multilineTextAlignment(.center)
+                        }
+                    }
+                    .padding(.horizontal, 24)
+
+                    // 氛围选择
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("整体氛围")
+                            .font(.system(size: 18, weight: .semibold))
+
+                        Button {
+                            showingMoodPicker = true
+                        } label: {
+                            HStack {
+                                if let mood = designState.selectedMood {
+                                    Image(systemName: mood.icon)
+                                        .font(.system(size: 24))
+                                    Text(mood.rawValue)
+                                        .font(.system(size: 16, weight: .medium))
+                                } else {
+                                    Text("选择氛围")
+                                        .foregroundStyle(.secondary)
+                                }
+                                Spacer()
+                                Image(systemName: "chevron.down")
+                                    .font(.system(size: 14))
+                                    .foregroundStyle(.secondary)
+                            }
+                            .foregroundStyle(.primary)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 56)
+                            .background(Color(uiColor: .systemGray6))
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                        }
+                    }
+                    .padding(.horizontal, 24)
+
+                    // 复杂度滑块
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Text("复杂度")
+                                .font(.system(size: 18, weight: .semibold))
+                            Spacer()
+                            Text(designState.complexityDescription)
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundStyle(Color(hex: "#667eea"))
+                        }
+
+                        Slider(
+                            value: $designState.complexity,
+                            in: 1...10,
+                            step: 1
+                        )
+                        .tint(Color(hex: "#667eea"))
+
+                        HStack {
+                            Text("简约")
+                                .font(.system(size: 12))
+                                .foregroundStyle(.secondary)
+                            Spacer()
+                            Text("丰富")
+                                .font(.system(size: 12))
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .padding(.horizontal, 24)
+
+                    // 正式度滑块
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Text("正式度")
+                                .font(.system(size: 18, weight: .semibold))
+                            Spacer()
+                            Text(designState.formalityDescription)
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundStyle(Color(hex: "#667eea"))
+                        }
+
+                        Slider(
+                            value: $designState.formality,
+                            in: 1...10,
+                            step: 1
+                        )
+                        .tint(Color(hex: "#667eea"))
+
+                        HStack {
+                            Text("休闲")
+                                .font(.system(size: 12))
+                                .foregroundStyle(.secondary)
+                            Spacer()
+                            Text("正式")
+                                .font(.system(size: 12))
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .padding(.horizontal, 24)
+
+                    // 高级设置按钮
+                    Button {
+                        showingAdvancedSettings = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "slider.horizontal.3")
+                            Text("高级设置")
+                                .font(.system(size: 16, weight: .medium))
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 14))
+                                .foregroundStyle(.secondary)
+                        }
+                        .foregroundStyle(.primary)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 56)
+                        .background(Color(uiColor: .systemGray6))
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                    }
+                    .padding(.horizontal, 24)
+
+                    // AI分析结果摘要
+                    if let analysis = designState.analysisResult {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("AI识别的设计元素")
+                                .font(.system(size: 18, weight: .semibold))
+                                .padding(.horizontal, 24)
+
+                            LazyVGrid(columns: [
+                                GridItem(.flexible()),
+                                GridItem(.flexible())
+                            ], spacing: 12) {
+                                ForEach(analysis.keyElements, id: \.self) { element in
+                                    HStack {
+                                        Image(systemName: "checkmark.circle.fill")
+                                            .foregroundStyle(Color(hex: "#667eea"))
+                                        Text(element)
+                                            .font(.system(size: 14))
+                                    }
+                                    .padding(.horizontal, 16)
+                                    .frame(height: 40)
+                                    .background(Color(uiColor: .systemGray6))
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                                }
+                            }
+                            .padding(.horizontal, 24)
+                        }
+                    }
+
+                    Spacer().frame(height: 20)
+                }
+
+                // 导航按钮
+                HStack(spacing: 16) {
+                    // 上一步
+                    Button {
+                        path.removeLast()
+                    } label: {
+                        HStack {
+                            Image(systemName: "chevron.left")
+                            Text("上一步")
+                        }
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 50)
+                        .background(Color(uiColor: .systemGray6))
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                    }
+
+                    // 下一步
+                    Button {
+                        designState.goToNextStep()
+                        path.append(AppDestination.content.rawValue)
+                    } label: {
+                        Text("确认，下一步")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 50)
+                            .background(designState.selectedMood == nil ? Color.gray : Color(hex: "#667eea"))
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                    }
+                    .disabled(designState.selectedMood == nil)
+                }
+                .padding(.horizontal, 24)
+
+                Spacer().frame(height: 20)
+            }
+        }
+        .navigationBarBackButtonHidden()
+        .sheet(isPresented: $showingMoodPicker) {
+            MoodPickerSheet()
+        }
+        .sheet(isPresented: $showingAdvancedSettings) {
+            AdvancedSettingsView()
+        }
+    }
+}
+
+// MARK: - 氛围选择器
+
+struct MoodPickerSheet: View {
+    @Environment(\.dismiss) var dismiss
+    @EnvironmentObject var designState: DesignState
+
+    var body: some View {
+        NavigationStack {
+            List {
+                ForEach(MoodOption.allCases) { mood in
+                    Button {
+                        designState.selectedMood = mood
+                        dismiss()
+                    } label: {
+                        HStack {
+                            Image(systemName: mood.icon)
+                                .font(.system(size: 24))
+                                .foregroundStyle(Color(hex: "#667eea"))
+                                .frame(width: 40)
+
+                            Text(mood.rawValue)
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundStyle(.primary)
+
+                            Spacer()
+
+                            if designState.selectedMood == mood {
+                                Image(systemName: "checkmark")
+                                    .foregroundStyle(Color(hex: "#667eea"))
+                            }
+                        }
+                    }
+                }
+            }
+            .navigationTitle("选择氛围")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("取消") {
+                        dismiss()
+                    }
+                }
+            }
+        }
+    }
+}
+
+#Preview {
+    @State var path: NavigationPath = .init()
+
+    NavigationStack {
+        ConfirmStyleView(path: $path)
+            .environmentObject(DesignState())
+    }
+}

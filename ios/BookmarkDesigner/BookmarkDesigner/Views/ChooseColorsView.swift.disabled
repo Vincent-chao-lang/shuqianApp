@@ -1,0 +1,109 @@
+//
+//  ChooseColorsView.swift
+//  BookmarkDesigner
+//
+//  步骤3: 选择配色方案
+//
+
+import SwiftUI
+
+struct ChooseColorsView: View {
+    @Binding var path: NavigationPath
+    @EnvironmentObject var designState: DesignState
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 30) {
+                // 进度指示器
+                ProgressBar(currentStep: 3, totalSteps: 4)
+
+                VStack(spacing: 24) {
+                    // 标题
+                    VStack(spacing: 8) {
+                        Text("选择你喜欢的配色")
+                            .font(.system(size: 24, weight: .bold))
+                        Text("点击选择一个配色方案")
+                            .font(.system(size: 15))
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.horizontal, 24)
+
+                    // 配色方案卡片
+                    VStack(spacing: 16) {
+                        ForEach(designState.availableColorSchemes) { scheme in
+                            ColorSchemeCard(
+                                scheme: scheme,
+                                isSelected: designState.selectedColorScheme?.id == scheme.id
+                            ) {
+                                withAnimation(.spring(response: 0.3)) {
+                                    designState.selectedColorScheme = scheme
+                                }
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 24)
+
+                    // 实时预览区域
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("预览效果")
+                            .font(.system(size: 18, weight: .semibold))
+                            .padding(.horizontal, 24)
+
+                        PreviewCanvas(designState: designState)
+                            .frame(height: 200)
+                            .padding(.horizontal, 24)
+                    }
+
+                    Spacer().frame(height: 20)
+                }
+
+                // 导航按钮
+                HStack(spacing: 16) {
+                    // 上一步
+                    Button {
+                        path.removeLast()
+                    } label: {
+                        HStack {
+                            Image(systemName: "chevron.left")
+                            Text("上一步")
+                        }
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 50)
+                        .background(Color(uiColor: .systemGray6))
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                    }
+
+                    // 下一步
+                    Button {
+                        designState.goToNextStep()
+                        path.append(AppDestination.content.rawValue)
+                    } label: {
+                        Text("下一步")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 50)
+                            .background(designState.selectedColorScheme == nil ? Color.gray : Color(hex: "#667eea"))
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                    }
+                    .disabled(designState.selectedColorScheme == nil)
+                }
+                .padding(.horizontal, 24)
+
+                Spacer().frame(height: 20)
+            }
+        }
+        .navigationBarBackButtonHidden()
+    }
+}
+
+#Preview {
+    @State var path: NavigationPath = .init()
+
+    NavigationStack {
+        ChooseColorsView(path: $path)
+            .environmentObject(DesignState())
+    }
+}
