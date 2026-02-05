@@ -249,10 +249,9 @@ curl -X POST http://localhost:8000/api/text-to-image \
 
 ---
 
-## 📞 联系方式
+## 📞 联系方式 2819699195@qq.com
 
 - **GitHub**: [项目仓库地址]
-- **文档**: `/Users/qiupengchao/lab/shuqianApp/DEPLOYMENT_GUIDE.md`
 
 ---
 
